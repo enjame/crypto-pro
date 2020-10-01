@@ -14,7 +14,7 @@ import { _getDateObj } from '../helpers/_getDateObj';
  * @returns подпись
  */
 export const createSignature = _afterPluginsLoaded(
-  async (thumbprint: string, dataBase64: string, detachedSignature: boolean = true): Promise<string> => {
+  async (thumbprint: string, dataBase64: string, detachedSignature: boolean = true, coSigner: boolean = false): Promise<string> => {
     const { cadesplugin } = window;
     const cadesCertificate = await _getCadesCert(thumbprint);
 
@@ -65,9 +65,15 @@ export const createSignature = _afterPluginsLoaded(
         let signature: string;
 
         try {
-          signature =
-            __cadesAsyncToken__ +
-            cadesSignedData.SignCades(cadesSigner, cadesplugin.CADESCOM_CADES_BES, detachedSignature);
+          if (coSigner) {
+            signature =
+              __cadesAsyncToken__ +
+              cadesSignedData.CoSignCades(cadesSigner, cadesplugin.CADESCOM_CADES_BES, detachedSignature);
+          } else {
+            signature =
+              __cadesAsyncToken__ +
+              cadesSignedData.SignCades(cadesSigner, cadesplugin.CADESCOM_CADES_BES, detachedSignature);
+          }
         } catch (error) {
           console.error(error);
 
